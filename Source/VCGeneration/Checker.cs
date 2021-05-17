@@ -14,6 +14,20 @@ namespace Microsoft.Boogie
     Closed
   }
 
+  public class Util
+  {
+    public static int SafeMult(int a, uint b) {
+      int result = Int32.MaxValue;
+      try {
+        checked {
+          result = (int)(a * b);
+        }
+      } catch (OverflowException) { }
+
+      return result;
+    }
+  }
+
   /// <summary>
   /// Interface to the theorem prover specialized to Boogie.
   ///
@@ -202,12 +216,12 @@ namespace Microsoft.Boogie
 
     private void SetTimeout(int timeout)
     {
-      TheoremProver.SetTimeout(timeout * 1000);
+      TheoremProver.SetTimeout(Util.SafeMult(timeout, 1000));
     }
 
     private void SetRlimit(int rlimit)
     {
-      TheoremProver.SetRlimit(rlimit * 1000);
+      TheoremProver.SetRlimit(Util.SafeMult(rlimit, 1000));
     }
 
     private void SetRandomSeed(int? randomSeed)
@@ -416,7 +430,7 @@ namespace Microsoft.Boogie
 
       if (timeout > 0)
       {
-        options.TimeLimit = timeout * 1000;
+        options.TimeLimit = Util.SafeMult(timeout, 1000);
       }
 
       if (taskID >= 0)
